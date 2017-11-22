@@ -1,0 +1,10 @@
+version: "2"
+services:
+  ros-duplicity:
+    build: './src'
+    image: 'evolutionsrl/ros-duplicity:latest'
+    container_name: 'ros-duplicity'
+    hostname: 'example.com'
+    volumes:
+    - '/var/run/docker.sock:/var/run/docker.sock'
+    - './conf:/conf'
