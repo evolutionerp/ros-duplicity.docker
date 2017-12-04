@@ -146,8 +146,17 @@ __init_conf() {
   __S_mysql() {
     local db_pswd=$(bk_env "MYSQL_ROOT_PASSWORD")
     docker start "$BK_CONTAINER" || { log --error "Cannot start container for provisioning."; return 2; }
+    # Ping
+    printf "Connecting " >&2
+    for i in {1..5}; do
+      echo "SHOW databases;"|docker exec -e MYSQL_PWD="$(bk_env 'MYSQL_ROOT_PASSWORD')" -i "$BK_CONTAINER" mysql -u root &>/dev/null \
+        && break \
+        || { printf "." >&2; sleep 2; }
+    done
+    printf "\n" >&2
+    # Strategy
     if [ "$BK_LOCAL_OUTPUT" ]; then
-      bk_log --diag --execute docker exec -e MYSQL_PWD="$(bk_env 'MYSQL_ROOT_PASSWORD')" -it "$BK_CONTAINER" mysqldump -u root --all-databases \
+      bk_log --diag --execute docker exec -e MYSQL_PWD="$(bk_env 'MYSQL_ROOT_PASSWORD')" -i "$BK_CONTAINER" mysqldump -u root --all-databases \
         > "$BK_LOCAL_OUTPUT/mysql.sql"
       local ec="$?"
       [ "$DEBUG" ] && cat "$BK_LOCAL_OUTPUT/mysql.sql"|head
