@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 FROM alpine:latest
-RUN apk --update add bash duplicity docker jq
+RUN apk --update add bash duplicity docker jq py2-pip
+RUN pip2 install fasteners
 COPY lib /lib
 COPY bin /bin
 COPY entryPoint.sh /entryPoint.sh
