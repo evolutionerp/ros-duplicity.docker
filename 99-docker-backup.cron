@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# Daily manual backup and docker-compose updating script
+#
+# Put this file in /etc/cron.daily/99-docker-backup
+# Remember to chmod +x !
+#
+
+# Replace /root with docker-compose.yml root path.
+cd /root
+
+docker-compose start ros-duplicity
+docker-compose exec ros-duplicity backup
+
+docker-compose pull --parallel --ignore-pull-failures
+docker-compose build --pull --no-cache
+docker-compose up -d
